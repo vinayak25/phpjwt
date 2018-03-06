@@ -6,7 +6,7 @@
 	class phpJwt
 	{
 		private $algo_type;
-
+		private $payload_data=array();
 		const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
 		const ALGO_TYPE_HS512 = 2;
@@ -30,6 +30,18 @@
 			$header_data = phpJwt::base64_generator(phpJwt::json_generator($header_data));
 			var_dump($header_data);
 		}
+
+		//This function creates generic standard payload
+		function createPayload(){
+			echo "Payload is created Here";
+		}
+
+
+
+		//This function creates extra data to be included in payload
+		function createExtraPayload(){
+
+		}	
 
 		//Converts array data into json data
 		//Currently uses json_encode() generic function
