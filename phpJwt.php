@@ -80,8 +80,8 @@
 			foreach ($extra_data as $key => $value) {
 				$this->payload_data[$key] = $value;
 			}
-			$this->payload_data = phpJwt::json_generator($this->payload_data);
-			var_dump($this->payload_data);
+			//$this->payload_data = phpJwt::json_generator($this->payload_data);
+			//var_dump($this->payload_data);
 		}	
 
 
@@ -109,13 +109,9 @@
 
 
 	$obj = new phpJwt();
-<<<<<<< HEAD
 	$obj->createHeader(0,"JWT","text/html");
 	$obj->createPayload("assguard","login","generic",1234567,12345678,12234567,23456);
-
-=======
 	$obj->createHeader(6,"JWT","text/html");
 	$data =["email"=>"vinayaksarawagi25@gmail.com","id"=>4567890];
 	$obj->createExtraPayload($data);
->>>>>>> c09ff4446856a001d06b3aadc0a61b56cf69e696
 ?>
