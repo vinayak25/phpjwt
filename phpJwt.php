@@ -7,8 +7,8 @@
 	{
 		private $algo_type;
 		private $payload_data=array();
-		private $header_data;
-		const ALGO_TYPE_HS256 = 0;
+		private $header_data;	
+    const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
 		const ALGO_TYPE_HS512 = 2;
 		const ALGO_TYPE_RS256 = 3;
@@ -23,6 +23,9 @@
 		*@param String $cty       : Defines the content-type of the token
 		*/
 		function createHeader($algo_type,$type="JWT",$cty=null){
+			if($algo_type > 5 or $algo_type<0){
+				throw new Exception("Algorithm type not defined. Please refer to the manual", 1);
+			}
 			if($cty==null){
 				$this->header_data = ["type"=>"JWT","alg"=>"'".$this->supported_algos[$algo_type]."'"];	
 			}else{
@@ -71,8 +74,12 @@
 
 
 		//This function creates extra data to be included in payload
-		function createExtraPayload(){
-			
+		function createExtraPayload($extra_data){
+			foreach ($extra_data as $key => $value) {
+				$this->payload_data[$key] = $value;
+			}
+			$this->payload_data = phpJwt::json_generator($this->payload_data);
+			var_dump($this->payload_data);
 		}	
 
 
@@ -88,10 +95,19 @@
 			$jsonData = base64_encode($jsonData);
 			return $jsonData;
 		}
+
+		function checkIfInteger($data){
+			return is_int($data);
+		}
+
+		function checkIfString($data){
+			return is_string($data);
+		}
 	}
 
 
 	$obj = new phpJwt();
-	$obj->createHeader(0,"JWT","text/html");
-	
+	$obj->createHeader(6,"JWT","text/html");
+	$data =["email"=>"vinayaksarawagi25@gmail.com","id"=>4567890];
+	$obj->createExtraPayload($data);
 ?>
