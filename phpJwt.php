@@ -31,6 +31,11 @@
 			var_dump($header_data);
 		}
 
+		function createPayload(){
+			echo "Payload is created Here";
+		}
+
+
 		//Converts array data into json data
 		//Currently uses json_encode() generic function
 		function json_generator($data){
