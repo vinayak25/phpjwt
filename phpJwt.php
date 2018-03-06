@@ -10,7 +10,7 @@
 		private $header_data;	
     const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
-		const ALGO_TYPE_HS512 = 2;
+		const ALGO_TYPE_HS5345678 = 2;
 		const ALGO_TYPE_RS256 = 3;
 		const ALGO_TYPE_RS384 = 4;
 		const ALGO_TYPE_RS512 = 5;
@@ -31,8 +31,8 @@
 			}else{
 				$this->header_data = ["type"=>"JWT","alg"=>"'".$this->supported_algos[$algo_type]."'","cty"=>"'".$cty."'"];
 			}
-			$header_data = phpJwt::base64_generator(phpJwt::json_generator($header_data));
-			var_dump($header_data);
+			$this->header_data = phpJwt::base64_generator(phpJwt::json_generator($this->header_data));
+			var_dump($this->header_data);
 		}
 
 		//This function creates generic standard payload
@@ -46,29 +46,31 @@
 		*@param int $jti:	Defines the unique identifier for the JWT.
 		*/
 		function createPayload($iss=null,$sub=null,$aud=null,$exp=null,$nbf=null,$iat=null,$jti=null){
-				if($this->$iss!=null)
+				if($iss!=null)
 				{
 					$this->payload_data["iss"] = $iss;
 				}
-				if($this->$sub!=null){
+				if($sub!=null){
 					$this->payload_data["sub"] = $sub;
 				}
-				if($this->$aud!=null){
+				if($aud!=null){
 					$this->payload_data["aud"] = $aud;
 				}
-				if($this->exp!=null){
+				if($exp!=null){
 					$this->payload_data["exp"] = $exp;
 				}
-				if($this->nbf!=null){
+				if($nbf!=null){
 					$this->payload_data["nbf"] = $nbf;
 				}
-				if($this->iat!=null){
+				if($iat!=null){
 					$this->payload_data["iat"] = $iat;
 				}
-				if($thsi->jti!-null){
+				if($jti!=null){
 					$this->payload_data["jti"] = $jti;
 				}
-				
+
+				$this->payload_data = phpJwt::json_generator($this->payload_data);
+				var_dump($this->payload_data);
 		}
 
 
@@ -78,8 +80,8 @@
 			foreach ($extra_data as $key => $value) {
 				$this->payload_data[$key] = $value;
 			}
-			$this->payload_data = phpJwt::json_generator($this->payload_data);
-			var_dump($this->payload_data);
+			//$this->payload_data = phpJwt::json_generator($this->payload_data);
+			//var_dump($this->payload_data);
 		}	
 
 
@@ -107,6 +109,8 @@
 
 
 	$obj = new phpJwt();
+	$obj->createHeader(0,"JWT","text/html");
+	$obj->createPayload("assguard","login","generic",1234567,12345678,12234567,23456);
 	$obj->createHeader(6,"JWT","text/html");
 	$data =["email"=>"vinayaksarawagi25@gmail.com","id"=>4567890];
 	$obj->createExtraPayload($data);
