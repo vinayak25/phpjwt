@@ -7,7 +7,10 @@
 	{
 		private $algo_type;
 		private $payload_data=array();
-		private $header_data;	
+		private $header_data;
+		private $headerb64;
+		private $payloadb64;
+
     const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
 		const ALGO_TYPE_HS5345678 = 2;
@@ -31,8 +34,8 @@
 			}else{
 				$this->header_data = ["type"=>"JWT","alg"=>"'".$this->supported_algos[$algo_type]."'","cty"=>"'".$cty."'"];
 			}
-			$this->header_data = phpJwt::base64_generator(phpJwt::json_generator($this->header_data));
-			var_dump($this->header_data);
+			$this->header_data = phpJwt::json_generator($this->header_data);
+			$this->headerb64 = phpJwt::base64_generator($this->header_data);
 		}
 
 		//This function creates generic standard payload
@@ -68,13 +71,13 @@
 				if($jti!=null){
 					$this->payload_data["jti"] = $jti;
 				}
-
-				$this->payload_data = phpJwt::json_generator($this->payload_data);
-				var_dump($this->payload_data);
 		}
 
 
-
+		/**
+		*@param Associative Array $extra_data Includes extra data to include in $payload_data
+		*
+		*/	
 		//This function creates extra data to be included in payload
 		function createExtraPayload($extra_data){
 			foreach ($extra_data as $key => $value) {
@@ -84,7 +87,10 @@
 			//var_dump($this->payload_data);
 		}	
 
-
+		function payload_encode(){
+			$this->payload_data = phpJwt::json_generator($this->payload_data);
+			$this->payloadb64 = phpJwt::base64_generator($this->payload_data);
+		}
 
 		//Converts array data into json data
 		//Currently uses json_encode() generic function
