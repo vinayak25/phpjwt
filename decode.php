@@ -22,17 +22,17 @@
     }
 
     /**
-     * @param integer $type:        Defines the type of result to be returned. Ranges from 0 to 2. 
+     * @param int $type:        Defines the type of result to be returned. Ranges from 0 to 2. 
      * 0 means encoded payload, 1 means payload in JSON, 2 means payload in array.
-     * @param integer $msg_type:    Defines that data detailing.
+     * @param int $msg_type:    Defines that data detailing.
      * 0 means data in detailed format, 1 means data in short format.
      */
     function getPayload($type,$msg_type){
-        if(checkIfInteger($type)){
-            throw new Exception("Undefined \"Type Variable\" type passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
+        if(!Decode::checkIfInteger($type)){
+            throw new Exception("Undefined \"Type Variable\" passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
         }
-        if($type>2 || $type<0){
-            throw new Exception("Range of \"Type variable\" not defined. Please see if you are providing value between 0-2. For more, please refer to the manual.",1)
+        if($type > 2 || $type < 0){
+            throw new Exception("Range of \"Type variable\" not defined. Please see if you are providing value between 0-2. For more, please refer to the manual.",1);
         }
         if($type == 0){
             $this->result = $this->jwtToken_break[1];
@@ -49,11 +49,11 @@
             $this->service_type = "Get the payload in array.";
         }
 
-        if(checkIfInteger($msg_type)){
+        if(!Decode::checkIfInteger($msg_type)){
             throw new Exception("Undefined \"Message Type Variable\" type passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
         }
         if($msg_type>2 || $msg_type<0){
-            throw new Exception("Range of \" Message Type variable\" not defined. Please see if you are providing value between 0-1. For more, please refer to the manual.",1)
+            throw new Exception("Range of \" Message Type variable\" not defined. Please see if you are providing value between 0-1. For more, please refer to the manual.",1);
         }
 
         //If msg_type variable is passed as 0, then only the payload data will be returned.
@@ -86,7 +86,8 @@
         $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQifQ.-xN_h82PHVTCMA9vdoHrcZxH-x5mb11y1537t3rGzcM";
         $decode = new Decode($token);
         $result = $decode->getPayload(1,1);
-        echo $decode->display(1);
+        var_dump($result);
+        //echo $decode->display(1);
         //var_dump($decode->result);
     }catch(Exception $e){
         echo $e->getMessage();
