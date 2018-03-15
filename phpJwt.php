@@ -11,7 +11,7 @@
 		private $headerb64;
 		private $payloadb64;
 
-    const ALGO_TYPE_HS256 = 0;
+    	const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
 		const ALGO_TYPE_HS5345678 = 2;
 		const ALGO_TYPE_RS256 = 3;
@@ -29,6 +29,16 @@
 			if($algo_type > 5 or $algo_type<0){
 				throw new Exception("Algorithm type not defined. Please refer to the manual", 1);
 			}
+			if(!phpJwt::checkIfInteger($algo_type)){
+				throw new Exception("Undefined Data Type passed. Please check, if you are passing an integer value in defined ranged. For more please refer to the manual", 1);
+			}
+			if(!phpJwt::checkIfString($type)){
+				throw new Exception("Undefined Data Type passed. Please check, if you are passing a string value. For more, please refer to the manual", 1);
+			}
+			/*
+			if($type==null || $type!="JWT" || $type!="jwt"){
+				throw new Exception("Undefined Token Type passed. Please refer to the manual", 1);
+			}*/
 			if($cty==null){
 				$this->header_data = ["type"=>"JWT","alg"=>"'".$this->supported_algos[$algo_type]."'"];	
 			}else{
@@ -49,6 +59,27 @@
 		*@param int $jti:	Defines the unique identifier for the JWT.
 		*/
 		function createPayload($iss=null,$sub=null,$aud=null,$exp=null,$nbf=null,$iat=null,$jti=null){
+				if(!phpJwt::checkIfString($iss)){
+					throw new Exception("Undefined \"Issuer\" type passed, please check if you are passing String type only. For more, please refer to the manual", 1);
+				}
+				if(!phpJwt::checkIfString($sub)){
+					throw new Exception("Undefined \"Subject\" type passed, please check if you are passing String type only. For more, please refer to the manual", 1);
+				}
+				if(!phpJwt::checkIfString($aud)){
+					throw new Exception("Undefined \"Audience\" type passed, please check if you are passing String type only. For more, please refer to the manual", 1);
+				}
+				if(!phpJwt::checkIfInteger($exp)){
+					throw new Exception("Undefined \"Expiration\" type passed, please check if you are passing Integer type only. For more, plase refer to the manual.", 1);
+				}
+				if(!phpJwt::checkIfInteger($nbf)){
+					throw new Exception("Undefined \"Not Before\" type passed, please check if you are passing Integer type only. For more, plase refer to the manual.", 1);
+				}
+				if(!phpJwt::checkIfInteger($iat)){
+					throw new Exception("Undefined \"Issued At\" type passed, please check if you are passing Integer type only. For more, plase refer to the manual.", 1);
+				}
+				if(!phpJwt::checkIfInteger($jti)){
+					throw new Exception("Undefined \"JWT Token Id\" type passed, please check if you are passing Integer type only. For more, plase refer to the manual.", 1);
+				}
 				if($iss!=null)
 				{
 					$this->payload_data["iss"] = $iss;
@@ -80,6 +111,9 @@
 		*/	
 		//This function creates extra data to be included in payload
 		function createExtraPayload($extra_data){
+			if(!phpJwt::checkIfArray($extra_data)){
+				throw new Exception("Undefined \"Extra Data\" type passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
+			}
 			foreach ($extra_data as $key => $value) {
 				$this->payload_data[$key] = $value;
 			}
@@ -111,13 +145,20 @@
 		function checkIfString($data){
 			return is_string($data);
 		}
+
+		function checkIfArray($data){
+			return is_array($data);
+		}
 	}
 
-
-	$obj = new phpJwt();
-	$obj->createHeader(0,"JWT","text/html");
-	$obj->createPayload("assguard","login","generic",1234567,12345678,12234567,23456);
-	$obj->createHeader(6,"JWT","text/html");
-	$data =["email"=>"vinayaksarawagi25@gmail.com","id"=>4567890];
-	$obj->createExtraPayload($data);
+	try{
+		$obj = new phpJwt();
+		$obj->createHeader(0,"JWT","text/html");
+		$obj->createPayload("assguard","login","generic",1234567,12345678,12234567,23456);
+		//$obj->createHeader(6,"JWT","text/html");
+		$data =["Email"=>"vinayaksarawagi25@gmail.com"];
+		$obj->createExtraPayload($data);
+	}catch(Exception $e){
+		echo $e->getMessage();
+	}
 ?>
