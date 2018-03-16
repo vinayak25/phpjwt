@@ -1,7 +1,6 @@
 <?php
  
  class Decode{
-
     private $jwtToken;
     private $jwtToken_break;
     private $status;
@@ -9,8 +8,8 @@
     //private $error_type;
     //private $error_code;
     private $result_detail = array();
+    private $secretkey = 'secret';
     
-
     function __construct($jwtToken){
         $this->jwtToken = $jwtToken;
         $this->jwtToken_break = explode(".",$this->jwtToken);
@@ -20,7 +19,6 @@
         //$this->error_code = null;
         $this->result_detail = null;
     }
-
     /**
      * @param int $type:        Defines the type of result to be returned. Ranges from 0 to 2. 
      * 0 means encoded payload, 1 means payload in JSON, 2 means payload in array.
@@ -48,14 +46,12 @@
             $this->status = 1;
             $this->service_type = "Get the payload in array.";
         }
-
         if(!Decode::checkIfInteger($msg_type)){
             throw new Exception("Undefined \"Message Type Variable\" type passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
         }
         if($msg_type>2 || $msg_type<0){
             throw new Exception("Range of \" Message Type variable\" not defined. Please see if you are providing value between 0-1. For more, please refer to the manual.",1);
         }
-
         //If msg_type variable is passed as 0, then only the payload data will be returned.
         //Else if msg_type variable is passed as 1, then detailed array of data will be passed.
         if($msg_type==0){
@@ -65,32 +61,68 @@
             return $this->result_detail;
         }
     }
-
+    /**
+     * This function will verify the JWT token thatis being passed to the code.
+     * @param $algo     : Provides the algo for the hash_hmac() function to compute the signature.
+     * @param $token    : Provides the token that in the encoded format from the user.
+     * @param $key      : This is the key that helps to generate signature to match with the encoded signature.
+     */
+    function verifyJWT($algo,$token,$key){
+        list($headerEncoded,$payloadEncoded,$signatureEncoded) = explode('.',$token);
+        if($algo == null){
+            $headerEncoded = Decode::json_degenerator($headerEncoded);
+            //var_dump($headerEncoded);
+            $algo = json_decode($headerEncoded);
+            if($algo->alg == "HS256"){
+                $algo = 'sha256';
+            }elseif($algo->alg == "HS384"){
+                $algo = 'sha384';
+            }elseif($algo->alg == "HS512"){
+                $algo = 'sha512';
+            }else{
+                throw new Exception("Undefined \"Algorithm used in decoding\" type passed, please check if you are passing Array type only. For more, plase refer to the manual.", 1);
+            }
+        }
+        if($key == null){
+            $key = $this->secretkey;
+        }
+        $receive = $headerEncoded.'.'.$payloadEncoded;
+        $rawsignature = base64_encode(hash_hmac($algo,$receive,$key,true));
+        var_dump($signatureEncoded);
+        var_dump($rawsignature);
+        if($rawsignature == $signatureEncoded){
+            return true;
+        }
+        else{
+            return false;
+        }
+        //return hash_equals($rawsignature,$signatureEncoded);
+    }
     function json_degenerator($data){
         $data  = base64_decode($data);
         return $data;
     }
-
     function array_degenerator($data){
         $data = base64_decode($data);
         $data = json_decode($data, TRUE);
         return $data;
     }
-
     function checkIfInteger($data){
         return is_int($data);
     }
     
  }
     try{
-        $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQifQ.-xN_h82PHVTCMA9vdoHrcZxH-x5mb11y1537t3rGzcM";
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5.HQpJ6r0+mKmkQIz33azxEa+HMngM1NOtv5qIOZ980F0=';
         $decode = new Decode($token);
         $result = $decode->getPayload(1,1);
-        var_dump($result);
+        //var_dump($result);
+        $secret_key = null;
+        $verify = $decode->verifyJWT('sha256',$token,$secret_key,TRUE);
+        var_dump($verify);
         //echo $decode->display(1);
         //var_dump($decode->result);
     }catch(Exception $e){
         echo $e->getMessage();
     }
-
 ?>
