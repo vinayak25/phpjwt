@@ -10,16 +10,13 @@
 		private $header_data;
 		private $headerb64;
 		private $payloadb64;
-
     	const ALGO_TYPE_HS256 = 0;
 		const ALGO_TYPE_HS384 = 1;
 		const ALGO_TYPE_HS5345678 = 2;
 		const ALGO_TYPE_RS256 = 3;
 		const ALGO_TYPE_RS384 = 4;
 		const ALGO_TYPE_RS512 = 5;
-
 		private $supported_algos = array("HS256 ","HS384","HS512","RS256","RS384","RS512"); 
-
 		/**
 		*@param int    $algo_type : Defines the type of supported algo
 		*@param String $type      : Defines the type of the header restricted to JWT
@@ -47,7 +44,6 @@
 			$this->header_data = phpJwt::json_generator($this->header_data);
 			$this->headerb64 = phpJwt::base64_generator($this->header_data);
 		}
-
 		//This function creates generic standard payload
 		/**
 		*@param String $iss: Defines issuer string.
@@ -103,8 +99,6 @@
 					$this->payload_data["jti"] = $jti;
 				}
 		}
-
-
 		/**
 		*@param Associative Array $extra_data Includes extra data to include in $payload_data
 		*
@@ -120,37 +114,30 @@
 			//$this->payload_data = phpJwt::json_generator($this->payload_data);
 			//var_dump($this->payload_data);
 		}	
-
 		function payload_encode(){
 			$this->payload_data = phpJwt::json_generator($this->payload_data);
 			$this->payloadb64 = phpJwt::base64_generator($this->payload_data);
 		}
-
 		//Converts array data into json data
 		//Currently uses json_encode() generic function
 		function json_generator($data){
 			$data =  json_encode($data);
 			return $data;
 		}
-
 		function base64_generator($jsonData){
 			$jsonData = base64_encode($jsonData);
 			return $jsonData;
 		}
-
 		function checkIfInteger($data){
 			return is_int($data);
 		}
-
 		function checkIfString($data){
 			return is_string($data);
 		}
-
 		function checkIfArray($data){
 			return is_array($data);
 		}
 	}
-
 	try{
 		$obj = new phpJwt();
 		$obj->createHeader(0,"JWT","text/html");
