@@ -87,16 +87,14 @@
             $key = $this->secretkey;
         }
         $receive = $headerEncoded.'.'.$payloadEncoded;
-        $rawsignature = base64_encode(hash_hmac($algo,$receive,$key,true));
-        var_dump($signatureEncoded);
-        var_dump($rawsignature);
+        $rawsignature = hash_hmac($algo,$receive,$key,true);
+         $rawsignature = str_replace('=', '', strtr(base64_encode($rawsignature), '+/', '-_'));
         if($rawsignature == $signatureEncoded){
             return true;
         }
         else{
             return false;
         }
-        //return hash_equals($rawsignature,$signatureEncoded);
     }
     function json_degenerator($data){
         $data  = base64_decode($data);
@@ -113,11 +111,11 @@
     
  }
     try{
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5.HQpJ6r0+mKmkQIz33azxEa+HMngM1NOtv5qIOZ980F0=';
+        $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb3VudHJ5IjoiUm9tYW5pYSIsIm5hbWUiOiJPY3RhdmlhIEFuZ2hlbCIsImVtYWlsIjoib2N0YXZpYWFuZ2hlbEBnbWFpbC5jb20ifQ.-jqYECDFNUemONuWXr9tYNYqes9On_PEBp-w7ML990k';
         $decode = new Decode($token);
         $result = $decode->getPayload(1,1);
         //var_dump($result);
-        $secret_key = null;
+        $secret_key = 'secret';
         $verify = $decode->verifyJWT('sha256',$token,$secret_key,TRUE);
         var_dump($verify);
         //echo $decode->display(1);
