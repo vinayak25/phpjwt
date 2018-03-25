@@ -70,9 +70,9 @@
     function verifyJWT($algo,$token,$key){
         list($headerEncoded,$payloadEncoded,$signatureEncoded) = explode('.',$token);
         if($algo == null){
-            $headerEncoded = Decode::json_degenerator($headerEncoded);
+            $header = Decode::json_degenerator($headerEncoded);
             //var_dump($headerEncoded);
-            $algo = json_decode($headerEncoded);
+            $algo = json_decode($header);
             if($algo->alg == "HS256"){
                 $algo = 'sha256';
             }elseif($algo->alg == "HS384"){
@@ -87,16 +87,14 @@
             $key = $this->secretkey;
         }
         $receive = $headerEncoded.'.'.$payloadEncoded;
-        $rawsignature = base64_encode(hash_hmac($algo,$receive,$key,true));
-        var_dump($signatureEncoded);
-        var_dump($rawsignature);
+        $rawsignature = hash_hmac($algo,$receive,$key,true);
+        $rawsignature = str_replace('=', '', strtr(base64_encode($rawsignature), '+/', '-_'));
         if($rawsignature == $signatureEncoded){
             return true;
         }
         else{
             return false;
         }
-        //return hash_equals($rawsignature,$signatureEncoded);
     }
     function json_degenerator($data){
         $data  = base64_decode($data);
@@ -113,12 +111,12 @@
     
  }
     try{
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5.HQpJ6r0+mKmkQIz33azxEa+HMngM1NOtv5qIOZ980F0=';
+        $token = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.YI0rUGDq5XdRw8vW2sDLRNFMN8Waol03iSFH8I4iLzuYK7FKHaQYWzPt0BJFGrAmKJ6SjY0mJIMZqNQJFVpkuw';
         $decode = new Decode($token);
         $result = $decode->getPayload(1,1);
         //var_dump($result);
-        $secret_key = null;
-        $verify = $decode->verifyJWT('sha256',$token,$secret_key,TRUE);
+        $secret_key = 'secret';
+        $verify = $decode->verifyJWT('sha512',$token,$secret_key,TRUE);
         var_dump($verify);
         //echo $decode->display(1);
         //var_dump($decode->result);
